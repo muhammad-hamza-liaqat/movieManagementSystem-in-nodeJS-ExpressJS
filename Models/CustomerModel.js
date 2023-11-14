@@ -12,10 +12,10 @@ const customerScheme = new mongoose.Schema({
   },
   password: {
     type: String,
-    required,
+    required: true,
   },
   isGold: {
-    type: Boolean,
+    type: String,
     default: "No",
   },
 });
@@ -28,7 +28,7 @@ const customerJoiScheme = Joi.object({
 
   email: Joi.string()
     .email({ tlds: { allow: ["com"] } })
-    .regex(/@(google|yahoo|gmail|icloud| outlook| hotmail)\.com$/)
+    .regex(/@(google|yahoo|gmail|icloud|outlook|hotmail)\.com$/)
     .required(),
 
   password: Joi.string().min(10).max(25).required(),
@@ -38,10 +38,10 @@ const customerJoiScheme = Joi.object({
 
 // function to validate the joi scheme of object
 
-const validateCustomer =(user)=>{
-    return customerJoiScheme.validate(user);
-}
-module.exports ={
-    customerModel: mongoose.model("customers", customerScheme),
-    validateCustomer
+const validateCustomer = (user) => {
+  return customerJoiScheme.validate(user);
+};
+module.exports = {
+  customerModel: mongoose.model("customers", customerScheme),
+  validateCustomer,
 };

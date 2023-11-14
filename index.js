@@ -3,10 +3,15 @@ const app = express();
 require("dotenv").config();
 require("./database/connection");
 
+
+const userRouter = require("./routes/userRoute");
+const customerRouter = require("./routes/customerRoute");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
-const userRouter = require("./routes/userRoute");
+
 app.use('/user',userRouter);
+
+app.use('/customer',customerRouter);
 
 
 app.listen(process.env.PORT, ()=>{
