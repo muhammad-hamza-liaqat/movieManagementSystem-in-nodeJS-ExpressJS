@@ -8,6 +8,7 @@ UserRouter.route("/add-user")
   .get((req, res) => {
     res.send("add-user-get-method");
   })
+
   .post(async (req, res) => {
     const { error } = validateUser(req.body);
     if (error) {
@@ -24,7 +25,11 @@ UserRouter.route("/add-user")
     res.status(200).send("user created!");
   });
 //   route to find the required ID
-UserRouter.post("/find/:id", async (req, res) => {
+UserRouter.route("/find/:id")
+.get((req,res)=>{
+  res.end("find get-method");
+})
+.post(async (req, res) => {
   let userToFind = await userModel.findById(req.params.id);
   if (!userToFind) {
     return res.status(400).send({ message: "user not found!" });

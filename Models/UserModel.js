@@ -37,7 +37,7 @@ const userJoiSchema = Joi.object({
 
   password: Joi.string().min(5).max(25).required(),
 
-  role: Joi.string().default("user"),
+  role: Joi.string().default("user")
 });
 
 const validateUser = (user) => {
