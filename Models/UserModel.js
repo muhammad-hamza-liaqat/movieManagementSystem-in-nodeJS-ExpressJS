@@ -46,5 +46,5 @@ const validateUser = (user) => {
 
 module.exports = {
   userModel: mongoose.model("users", UserSchema),
-  validateUser,
+  validateUser
 };
