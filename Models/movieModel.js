@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
+const { genreSchema, genreModel } = require("./genreModel");
 
 const movieSchema = new mongoose.Schema({
   title: {
@@ -23,15 +24,20 @@ const movieSchema = new mongoose.Schema({
     },
     required: true,
   },
+  genre: {
+    type: String,
+    required: true
+  }
 });
 const movieJoiSchema = Joi.object({
   title: Joi.string().min(1).max(100).required(),
   price: Joi.number().min(200).max(10000).required(),
-//   minimum seats 50, max seats limit 1000
+  //   minimum seats 50, max seats limit 1000
   numberInSeats: Joi.number().min(50).max(1000).required(),
-//   dailyRentalRate: Joi.number().min(200).max(10000).required(),
-// year-month-day  => example=> 2023-11-14 
-  dateOfRelease: Joi.date().max('now').required(),
+  //   dailyRentalRate: Joi.number().min(200).max(10000).required(),
+  // year-month-day  => example=> 2023-11-14
+  dateOfRelease: Joi.date().max("now").required(),
+  genre: Joi.string().required(),
 });
 
 const validateMovie = (data) => {

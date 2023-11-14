@@ -4,7 +4,7 @@ const { userModel, validateUser } = require("../Models/UserModel");
 const UserRouter = express.Router();
 const bcrypt = require("bcrypt");
 
-UserRouter.route("/add-user")
+UserRouter.route("/sign-up")
   .get((req, res) => {
     res.send("add-user-get-method");
   })
@@ -14,7 +14,7 @@ UserRouter.route("/add-user")
     if (error) {
       return res.status(400).send(error.details[0].message);
     }
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    var hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     const { name, email, password } = req.body;
 
@@ -35,6 +35,22 @@ UserRouter.route("/find/:id")
     return res.status(400).send({ message: "user not found!" });
   }
   res.status(200).send(userToFind.name);
+});
+
+UserRouter.post("/login", async (req,res)=>{
+  const {email, password} = req.body;
+
+  const user = await userModel.findOne({ email });
+  console.log(user);
+  if(!user){
+    return res.status(400).send({message: "invalid email or password!"})
+  }
+  const validPassword = await bcrypt.compare(password, user.password);
+
+  if (!validPassword){
+    return res.status(400).send({message: "invalid email or password!"})
+  }
+  // res.send("user login!");
 });
 
 module.exports = UserRouter;
