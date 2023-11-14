@@ -19,6 +19,15 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
     default: "user",
+    required: false,
+  },
+  isVerified: {
+    type: Boolean,
+    default: "non_verified_account",
+    required: false,
+  },
+  verificationToken: {
+    type: String,
   },
 });
 
@@ -37,7 +46,7 @@ const userJoiSchema = Joi.object({
 
   password: Joi.string().min(5).max(25).required(),
 
-  role: Joi.string().default("user")
+  role: Joi.string().default("user"),
 });
 
 const validateUser = (user) => {
@@ -46,5 +55,5 @@ const validateUser = (user) => {
 
 module.exports = {
   userModel: mongoose.model("users", UserSchema),
-  validateUser
+  validateUser,
 };

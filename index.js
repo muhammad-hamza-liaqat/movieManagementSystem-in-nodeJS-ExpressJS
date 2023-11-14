@@ -2,23 +2,28 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 require("./database/connection");
-
+const cors = require("cors");
 
 const userRouter = require("./routes/userRoute");
 const customerRouter = require("./routes/customerRoute");
-const genereRouter = require("./routes/genreRoute");
-const movieRoute = require("./routes/movieRoute");
+const genreRouter = require("./routes/genreRoute");
+const movieRouter = require("./routes/movieRoute");
+
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
-app.use('/user',userRouter);
+app.use("/user", userRouter);
+app.use("/customer", customerRouter);
+app.use("/genre", genreRouter);
+app.use("/movie", movieRouter);
 
-app.use('/customer',customerRouter);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something went wrong!");
+});
 
-app.use('/genre', genereRouter);
-
-app.use('/movie', movieRoute);
-
-app.listen(process.env.PORT, ()=>{
-    console.log(`server is running at localhost://${process.env.PORT}`)
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running at http://localhost:${process.env.PORT}`);
 });
