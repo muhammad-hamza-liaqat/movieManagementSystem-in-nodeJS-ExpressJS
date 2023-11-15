@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   },
   isVerified: {
     type: Boolean,
-    default: "non_verified_account",
+    default: "not verified",
     required: false,
   },
   verificationToken: {

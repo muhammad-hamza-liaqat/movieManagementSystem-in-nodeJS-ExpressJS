@@ -4,15 +4,33 @@ const { userModel, validateUser } = require("../Models/UserModel");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const nodemailer = require("nodemailer");
+const schedule = require("node-schedule");
+const { transporter, sendVerificationEmail } = require("../services/mail");
 
 // Create email transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "mh408800@gmail.com",
-    pass: "fqplkcnwytbhzjjc",
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: "mh408800@gmail.com",
+//     pass: "fqplkcnwytbhzjjc",
+//   },
+// });
+
+// const sendVerificationEmail = (email, verificationToken) => {
+//   const emailData = {
+//     to: email,
+//     subject: 'Account Verification',
+//     html: `<p>Click the following link to verify your account: <a href="http://localhost:3000/user/verify/${verificationToken}">Verify</a></p>`,
+//   };
+
+//   transporter.sendMail(emailData, (e, info) => {
+//     if (e) {
+//       console.error('Error sending verification email:', e);
+//     } else {
+//       console.log('Email sent:', info.response);
+//     }
+//   });
+// };
 
 UserRouter.route("/sign-up")
   .get((req, res) => {
@@ -26,7 +44,7 @@ UserRouter.route("/sign-up")
       }
 
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
-      var verificationToken = uuidv4();
+      const verificationToken = uuidv4();
 
       const user = await userModel.create({
         ...req.body,
@@ -34,32 +52,22 @@ UserRouter.route("/sign-up")
         verificationToken: verificationToken,
         isVerified: false,
       });
-      console.log(user);
+      const cronExpression = `*/3 * * * * *`;
+      const scheduledJob = schedule.scheduleJob(cronExpression, () => {
+        sendVerificationEmail(user.email, verificationToken);
 
-      const mailOption = {
-        from: "localhost@gmail.com",
-        to: req.body.email,
-        subject: "Account Verification",
-        html: `<p>Click the following link to verify your account: <a href="http://localhost:3000/user/verify/${verificationToken}">Verify</a></p>`,
-      };
+        // Cancel the scheduled job after sending the email
+        scheduledJob.cancel();
+      });
 
-      transporter.sendMail(mailOption, (e, info) => {
-        if (e) {
-          console.error("Error sending verification email:", e);
-          res.status(500).json({ message: "Internal server error" });
-        } else {
-          console.log("Email sent:", info.response);
-          res.json({
-            message: "Registration successful. Verification email sent.",
-          });
-        }
+      res.json({
+        message: "Registration successful. Verification email scheduled.",
       });
     } catch (error) {
       console.error("Unexpected error during user registration:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
-
 UserRouter.route("/verify/:token").patch(async (req, res) => {
   try {
     const { token } = req.params;
@@ -117,11 +125,9 @@ UserRouter.post("/login", async (req, res) => {
     }
     // won't login until the user is verified
     if (!user.isVerified) {
-      return res
-        .status(400)
-        .json({
-          message: "account not verified!, verify your account firstly.",
-        });
+      return res.status(400).json({
+        message: "account not verified!, verify your account firstly.",
+      });
     }
 
     res.json({ message: "User login successful!" });
