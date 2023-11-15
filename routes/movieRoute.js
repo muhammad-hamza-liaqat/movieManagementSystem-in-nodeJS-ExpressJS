@@ -10,19 +10,32 @@ movieRouter
     res.send("add-movie get-method");
   })
   .post(async (req, res) => {
-    const { error } = validateMovie(req.body);
+    const { title, price, numberInSeats, dateOfRelease, genre } = req.body;
+    const { error } = validateMovie({
+      title,
+      price,
+      numberInSeats,
+      dateOfRelease,
+      genre,
+    });
     if (error) {
       return res.status(400).send(error.details[0].message);
     }
-    genre = await genreModel.find({ name: req.body.genre });
-    console.log(genre)
-
-    const newMovie = await movieModel.create({
-      ...req.body,
-      genre: genre[0].name,
-    });
-    res.status(200).send("movie created!");
-    console.log(newMovie);
+    const findGenre = await genreModel.findOne({ name: genre.name });
+    console.log(findGenre)
+    if (findGenre !== null) {
+      const newMovie = await movieModel.create({
+        title,
+        price,
+        numberInSeats,
+        dateOfRelease,
+        genre,
+      });
+      res.status(200).send("movie created!");
+    }
+    else{
+      res.end("genre doesn't exist! movie can't be created!")
+    }
   });
 
 movieRouter.get("/find/:id", async (req, res) => {

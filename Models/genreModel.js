@@ -19,5 +19,5 @@ const validateGenre = (name) => {
 module.exports = {
   genreModel: mongoose.model("genres", genreSchema),
   validateGenre,
-  genreSchema
+  genreSchema,
 };

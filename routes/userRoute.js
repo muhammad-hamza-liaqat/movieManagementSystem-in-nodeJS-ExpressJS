@@ -28,7 +28,6 @@ UserRouter.route("/sign-up")
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       var verificationToken = uuidv4();
 
-      // Include verificationToken in the user model
       const user = await userModel.create({
         ...req.body,
         password: hashedPassword,
@@ -61,27 +60,26 @@ UserRouter.route("/sign-up")
     }
   });
 
-UserRouter.route("/verify/:token")
-  .patch(async (req, res) => {
-    try {
-      const { token } = req.params;
-      const user = await userModel.findOne({ verificationToken: token });
+UserRouter.route("/verify/:token").patch(async (req, res) => {
+  try {
+    const { token } = req.params;
+    const user = await userModel.findOne({ verificationToken: token });
 
-      if (!user) {
-        return res.status(404).json({ error: "User not found!" });
-      }
-
-      // Update user's verification status
-      user.isVerified = true;
-      user.verificationToken = null;
-      await user.save();
-
-      res.send("Account verified successfully");
-    } catch (error) {
-      console.error("Error during account verification:", error);
-      res.status(500).json({ error: "Account not verified, Internal Server Error" });
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
     }
-  });
+    user.isVerified = true;
+    user.verificationToken = null;
+    await user.save();
+
+    res.send("Account verified successfully");
+  } catch (error) {
+    console.error("Error during account verification:", error);
+    res
+      .status(500)
+      .json({ error: "Account not verified, Internal Server Error" });
+  }
+});
 
 UserRouter.route("/find/:id")
   .get((req, res) => {
@@ -97,7 +95,7 @@ UserRouter.route("/find/:id")
 
       res.status(200).send(userToFind.name);
     } catch (error) {
-      console.error("Unexpected error during user lookup:", error);
+      console.error("catch block- find/:id", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
@@ -105,22 +103,31 @@ UserRouter.route("/find/:id")
 UserRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    // verif the user email
     const user = await userModel.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password!" });
     }
-
+    // bcrypt.campare to password ans user password entered in the params
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
       return res.status(400).json({ message: "Invalid email or password!" });
     }
+    // won't login until the user is verified
+    if (!user.isVerified) {
+      return res
+        .status(400)
+        .json({
+          message: "account not verified!, verify your account firstly.",
+        });
+    }
 
     res.json({ message: "User login successful!" });
   } catch (error) {
-    console.error("Unexpected error during user login:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("error occured during login:", error);
+    res.status(500).json({ message: "server error" });
   }
 });
 
