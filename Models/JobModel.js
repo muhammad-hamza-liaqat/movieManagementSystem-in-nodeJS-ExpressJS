@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const jobSchema= new mongoose.Schema({
     Detail:{
-        type: mongoose.Schema.Types.Mixed
+        type: String
     }
 })
 

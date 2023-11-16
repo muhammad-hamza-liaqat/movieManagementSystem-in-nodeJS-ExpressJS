@@ -5,7 +5,11 @@ const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const nodemailer = require("nodemailer");
 const schedule = require("node-schedule");
-const { transporter, sendVerificationEmail, emailQueue } = require("../services/mail");
+const {
+  transporter,
+  sendVerificationEmail,
+  emailQueue,
+} = require("../services/mail");
 
 // Create email transporter
 // const transporter = nodemailer.createTransport({
@@ -52,19 +56,12 @@ UserRouter.route("/sign-up")
         verificationToken: verificationToken,
         isVerified: false,
       });
-      emailQueue.add({
+      // console.log(emailQueue)
+      await emailQueue.add({
         to: user.email,
         subject: "Email Verification",
         text: `Click the following link to verify your email: http://localhost:8080/verify/${verificationToken}`,
       });
-
-      // const cronExpression = `*/3 * * * * *`;
-      // const scheduledJob = schedule.scheduleJob(cronExpression, () => {
-      //   sendVerificationEmail(user.email, verificationToken);
-
-      //   // Cancel the scheduled job after sending the email
-      //   scheduledJob.cancel();
-      // });
 
       res.json({
         message: "Registration successful. Verification email scheduled.",
