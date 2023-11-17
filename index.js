@@ -3,12 +3,15 @@ const app = express();
 require("dotenv").config();
 require("./database/connection");
 const cors = require("cors");
+const cron = require("node-cron");
+const getWeather = require("./weather");
 
 const userRouter = require("./routes/userRoute");
 const customerRouter = require("./routes/customerRoute");
 const genreRouter = require("./routes/genreRoute");
 const movieRouter = require("./routes/movieRoute");
 const rentalRouter = require("./routes/rentalRoute");
+
 
 app.use(cors());
 app.use(express.json());
@@ -19,6 +22,17 @@ app.use("/customer", customerRouter);
 app.use("/genre", genreRouter);
 app.use("/movie", movieRouter);
 app.use("/rental", rentalRouter);
+
+cron.schedule('* * * * *', async () => {
+  console.log('Running cron job...');
+  try {
+    const weatherData = await getWeather();
+    console.log('Weather data:', weatherData);
+  } catch (error) {
+    console.error('Error in cron job:', error);
+    
+  }
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

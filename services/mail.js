@@ -1,7 +1,7 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 const Queue = require("bull");
-const JobModel = require("../Models/JobModel"); // Change variable name from 'job' to 'JobModel'
+const JobModel = require("../Models/JobModel"); 
 
 async function saveDataJobCollection(jobData) {
   try {
@@ -54,7 +54,7 @@ emailQueue.process(async (job) => {
       
       await JobModel.deleteOne({ _id: jobDb.id });
       console.log("Job removed from MongoDB:", jobDb.id);
-    }, 10000); 
+    }, 10000); //10 sec
 
     // Close the transport connection after processing
     transporter.close();

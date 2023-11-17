@@ -114,26 +114,28 @@ UserRouter.route("/find/:id")
 UserRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    // verif the user email
     const user = await userModel.findOne({ email });
-
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password!" });
     }
-    // bcrypt.campare to password ans user password entered in the params
     const validPassword = await bcrypt.compare(password, user.password);
-
     if (!validPassword) {
       return res.status(400).json({ message: "Invalid email or password!" });
     }
-    // won't login until the user is verified
     if (!user.isVerified) {
       return res.status(400).json({
         message: "account not verified!, verify your account firstly.",
       });
     }
+    const opt = uuidv4();
 
-    res.json({ message: "User login successful!" });
+    emailQueue.add({
+    to: email,
+    subject: "OTP Verification",
+    text: `your otp is ${opt}.<br/> to enchance security, we've added 2 step verification to login. we want to secure you and your data`,
+
+  });
+    res.json({ message: "for more verification, please enter the OTP" });
   } catch (error) {
     console.error("error occured during login:", error);
     res.status(500).json({ message: "server error" });

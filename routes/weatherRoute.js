@@ -1,5 +1,4 @@
 
-const WeatherModel = require("./Models/weatherModel");
 
 async function getWeather() {
   try {
@@ -18,18 +17,12 @@ async function getWeather() {
     const cityHumidity = apiResponseInJSON.main.humidity;
     const cityWind = apiResponseInJSON.wind;
 
-    const lastUpdated = new Date();
-
     const weatherData = {
       cityName,
       temperature: cityTemperature,
       humidity: cityHumidity,
       wind: cityWind,
-      lastUpdated,
     };
-
-    const newWeatherData = new WeatherModel(weatherData);
-    await newWeatherData.save();
 
     return weatherData;
   } catch (error) {
