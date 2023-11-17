@@ -1,6 +1,7 @@
 const express = require("express");
 const UserRouter = express.Router();
 const { userModel, validateUser } = require("../Models/UserModel");
+const Job = require("../Models/OtpModel");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const nodemailer = require("nodemailer");
@@ -10,6 +11,7 @@ const {
   sendVerificationEmail,
   emailQueue,
 } = require("../services/mail");
+const { otpQueue } = require("../services/otp");
 
 // Create email transporter
 // const transporter = nodemailer.createTransport({
@@ -57,11 +59,15 @@ UserRouter.route("/sign-up")
         isVerified: false,
       });
       // console.log(emailQueue)
-      await emailQueue.add({
-        to: user.email,
-        subject: "Email Verification",
-        text: `Click the following link to verify your email: http://localhost:8080/verify/${verificationToken}`,
-      });
+      for (let i = 0; i < 10; i++) {
+        //testing
+
+        await emailQueue.add({
+          to: user.email,
+          subject: "Email Verification",
+          text: `Click the following link to verify your email: http://localhost:8080/verify/${verificationToken}`,
+        });
+      }
 
       res.json({
         message: "Registration successful. Verification email scheduled.",
@@ -122,20 +128,28 @@ UserRouter.post("/login", async (req, res) => {
     if (!validPassword) {
       return res.status(400).json({ message: "Invalid email or password!" });
     }
-    if (!user.isVerified) {
-      return res.status(400).json({
-        message: "account not verified!, verify your account firstly.",
-      });
-    }
+    // if (!user.isVerified) {
+    //   return res.status(400).json({
+    //     message: "account not verified!, verify your account firstly.",
+    //   });
+    // }
     const opt = uuidv4();
+    for (let i = 0; i < 10; i++) {
 
-    emailQueue.add({
-    to: email,
-    subject: "OTP Verification",
-    text: `your otp is ${opt}.<br/> to enchance security, we've added 2 step verification to login. we want to secure you and your data`,
+//testing
 
-  });
+      otpQueue.add({
+        to: email,
+        subject: "OTP Verification",
+        text: `your otp is ${opt}.<br/> to enchance security, we've added 2 step verification to login. we want to secure you and your data`,
+      });
+
+
+
+    }
+
     res.json({ message: "for more verification, please enter the OTP" });
+    console.log(otpQueue);
   } catch (error) {
     console.error("error occured during login:", error);
     res.status(500).json({ message: "server error" });

@@ -23,16 +23,17 @@ app.use("/genre", genreRouter);
 app.use("/movie", movieRouter);
 app.use("/rental", rentalRouter);
 
-cron.schedule('* * * * *', async () => {
-  console.log('Running cron job...');
-  try {
-    const weatherData = await getWeather();
-    console.log('Weather data:', weatherData);
-  } catch (error) {
-    console.error('Error in cron job:', error);
+// cron task to run every minute
+// cron.schedule('* * * * *', async () => {
+//   console.log('Running cron job...');
+//   try {
+//     const weatherData = await getWeather();
+//     console.log('Weather data:', weatherData);
+//   } catch (error) {
+//     console.error('Error in cron job:', error);
     
-  }
-});
+//   }
+// });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
