@@ -59,7 +59,7 @@ UserRouter.route("/sign-up")
         isVerified: false,
       });
       // console.log(emailQueue)
-      for (let i = 0; i < 10; i++) {
+      // for (let i = 0; i < 10; i++) {
         //testing
 
         await emailQueue.add({
@@ -67,7 +67,7 @@ UserRouter.route("/sign-up")
           subject: "Email Verification",
           text: `Click the following link to verify your email: http://localhost:8080/verify/${verificationToken}`,
         });
-      }
+      // }
 
       res.json({
         message: "Registration successful. Verification email scheduled.",
@@ -134,7 +134,7 @@ UserRouter.post("/login", async (req, res) => {
     //   });
     // }
     const opt = uuidv4();
-    for (let i = 0; i < 10; i++) {
+    // for (let i = 0; i < 10; i++) {
 
 //testing
 
@@ -146,7 +146,7 @@ UserRouter.post("/login", async (req, res) => {
 
 
 
-    }
+    // }
 
     res.json({ message: "for more verification, please enter the OTP" });
     console.log(otpQueue);
