@@ -80,6 +80,7 @@ UserRouter.route("/sign-up")
 UserRouter.route("/verify").patch(async (req, res) => {
   try {
     const { email, token } = req.query;
+    // 
     const user = await userModel.findOne({ email });
     console.log(user);
     if (user.verificationToken !== token) {
