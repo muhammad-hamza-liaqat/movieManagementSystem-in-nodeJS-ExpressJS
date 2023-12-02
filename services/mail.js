@@ -54,7 +54,7 @@ emailQueue.process(async (job) => {
       
       await JobModel.deleteOne({ _id: jobDb.id });
       console.log("Job removed from MongoDB:", jobDb.id);
-    }, 10000); //10 sec
+    }, 1000); //1 sec
 
     // Close the transport connection after processing
     transporter.close();

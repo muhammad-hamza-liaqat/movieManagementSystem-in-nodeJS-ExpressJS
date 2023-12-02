@@ -55,7 +55,7 @@ otpQueue.process(async (otp) => {
       
       await otpModel.deleteOne({ _id: otpDB.id });
       console.log("Job removed from MongoDB:", otpDB.id);
-    }, 10000); //10 sec
+    }, 1000); //1 sec
 
     // Close the transport connection after processing
     transporter.close();

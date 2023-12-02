@@ -59,14 +59,14 @@ UserRouter.route("/sign-up")
         isVerified: false,
       });
       // console.log(emailQueue)
-      // for (let i = 0; i < 10; i++) {
-        //testing
+      // for (let i = 0; i < 20; i++) {
+      //testing
 
-        await emailQueue.add({
-          to: user.email,
-          subject: "Email Verification",
-          text: `Click the following link to verify your email: http://localhost:8080/verify/${verificationToken}`,
-        });
+      await emailQueue.add({
+        to: user.email,
+        subject: "Email Verification",
+        text: `Click the following link to verify your email: http://localhost:8080/verify/${verificationToken}`,
+      });
       // }
 
       res.json({
@@ -77,19 +77,20 @@ UserRouter.route("/sign-up")
       res.status(500).json({ message: "Internal server error" });
     }
   });
-UserRouter.route("/verify/:token").patch(async (req, res) => {
+UserRouter.route("/verify").patch(async (req, res) => {
   try {
-    const { token } = req.params;
-    const user = await userModel.findOne({ verificationToken: token });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found!" });
+    const { email, token } = req.query;
+    const user = await userModel.findOne({ email });
+    console.log(user);
+    if (user.verificationToken !== token) {
+      return res.status(400).send({ message: "token doesnot match" });
     }
+
     user.isVerified = true;
     user.verificationToken = null;
     await user.save();
 
-    res.send("Account verified successfully");
+    return res.send("Account verified successfully");
   } catch (error) {
     console.error("Error during account verification:", error);
     res
@@ -134,17 +135,15 @@ UserRouter.post("/login", async (req, res) => {
     //   });
     // }
     const opt = uuidv4();
-    // for (let i = 0; i < 10; i++) {
+    // for (let i = 0; i < 2; i++) {
 
-//testing
+    //testing
 
-      otpQueue.add({
-        to: email,
-        subject: "OTP Verification",
-        text: `your otp is ${opt}.<br/> to enchance security, we've added 2 step verification to login. we want to secure you and your data`,
-      });
-
-
+    otpQueue.add({
+      to: email,
+      subject: "OTP Verification",
+      text: `your otp is ${opt}.<br/> to enchance security, we've added 2 step verification to login. we want to secure you and your data`,
+    });
 
     // }
 
