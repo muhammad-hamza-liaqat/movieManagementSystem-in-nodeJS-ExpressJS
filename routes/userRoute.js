@@ -83,6 +83,9 @@ UserRouter.route("/verify").patch(async (req, res) => {
     // 
     const user = await userModel.findOne({ email });
     console.log(user);
+    if (!user){
+      return res.status(400).json({message: "no user found!"})
+    }
     if (user.verificationToken !== token) {
       return res.status(400).send({ message: "token doesnot match" });
     }
