@@ -15,6 +15,7 @@ async function getWeather() {
 
     const cityName = apiResponseInJSON.name;
     const cityTemperature = apiResponseInJSON.main.temp;
+
     const cityHumidity = apiResponseInJSON.main.humidity;
     const cityWind = apiResponseInJSON.wind;
 
